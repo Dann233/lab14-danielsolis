@@ -32,3 +32,25 @@ export function search(text) {
   );
   return stmt.all(param, param, param, param, param, param);
 }
+
+export function create(album) {
+  const stmt = db.prepare(
+    'INSERT INTO albumes (titulo, artista, genero, anio, sello, pistas, imagen, slug, resumen, descripcion) VALUES (:titulo, :artista, :genero, :anio, :sello, :pistas, :imagen, :slug, :resumen, :descripcion)'
+  );
+  stmt.run(album);
+  return getBySlug(album.slug);
+}
+
+export function update(slug, album) {
+  const stmt = db.prepare(
+    'UPDATE albumes SET titulo = :titulo, artista = :artista, genero = :genero, anio = :anio, sello = :sello, pistas = :pistas, imagen = :imagen, slug = :nuevoSlug, resumen = :resumen, descripcion = :descripcion WHERE slug = :slug'
+  );
+  stmt.run({ ...album, nuevoSlug: album.slug, slug });
+  return getBySlug(album.slug);
+}
+
+export function remove(slug) {
+  const stmt = db.prepare('DELETE FROM albumes WHERE slug = ?');
+  const result = stmt.run(slug);
+  return result.changes > 0;
+}
